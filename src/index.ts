@@ -27,8 +27,19 @@
 
 import { Hono } from "hono";
 import { todos } from "./todos/api";
+import { basicAuth } from "hono/basic-auth";
 
 const app = new Hono();
+
+app.use('/api/*', async (c, next) => {
+	const auth = basicAuth({
+	  username: c.env!.USER_NAME as string,
+	  password: c.env!.PASSWORD as string,
+	})
+	return auth(c, next)
+  })
+
+
 app.route("/api/todos", todos);
 
 export default app;
